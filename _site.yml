@@ -14,7 +14,7 @@ navbar:
         - text: "overview"
           href: workshop-info.html
         - text: "slides"
-          href: aimos/workshop-slides.html
+          href: workshop_slides/workshop-slides.html
     - text: "unconf"
       menu:
         - text: "overview"
