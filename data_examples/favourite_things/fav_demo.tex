@@ -134,7 +134,7 @@
 Read and clean fav things data
 
 \hypertarget{load-packages}{%
-\section{load packages}\label{load-packages}}
+\subsection{load packages}\label{load-packages}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -146,11 +146,18 @@ Read and clean fav things data
 \end{Shaded}
 
 \hypertarget{read-data}{%
-\section{read data}\label{read-data}}
+\subsection{read data}\label{read-data}}
+
+The fav\_things dataset comes from a google form survey I sent around
+prior to the workshop. The survey included favourite things ratings and
+5 trivia questions about The Sound of Music. You can see a
+\href{https://forms.gle/XAhDG1JfAoAnd9G37}{copy of survey here}. For
+code to get data from googledrive into R, see the script ``get fav from
+googledrive.R''
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{fav_things <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{here}\NormalTok{(}\StringTok{"favourite_things"}\NormalTok{, }\StringTok{"fav_subset.csv"}\NormalTok{))}
+\NormalTok{fav_things <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{here}\NormalTok{(}\StringTok{"data_examples"}\NormalTok{, }\StringTok{"favourite_things"}\NormalTok{, }\StringTok{"fav_subset.csv"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -170,7 +177,12 @@ Read and clean fav things data
 \end{verbatim}
 
 \hypertarget{clean-names}{%
-\section{clean names}\label{clean-names}}
+\subsection{clean names}\label{clean-names}}
+
+This chunk cleans the variable names, making them all lower case with
+underscores in the gaps, creates a new variable called id that creates
+ids by row, and drops the timestamp variable using
+select(-variablename).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -179,6 +191,7 @@ Read and clean fav things data
 \StringTok{  }\KeywordTok{rowid_to_column}\NormalTok{(}\DataTypeTok{var =} \StringTok{"id"}\NormalTok{) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\StringTok{ }\NormalTok{timestamp)}
 
+\CommentTok{#check the names of the variables}
 \KeywordTok{names}\NormalTok{(clean)}
 \end{Highlighting}
 \end{Shaded}
@@ -196,7 +209,9 @@ Read and clean fav things data
 \end{verbatim}
 
 \hypertarget{rename}{%
-\section{rename}\label{rename}}
+\subsection{rename}\label{rename}}
+
+This chunk uses rename() from dplyr to rename each of the variables.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -208,14 +223,8 @@ Read and clean fav things data
          \DataTypeTok{packages =}\NormalTok{ brown_paper_packages_tied_up_with_string, }
          \DataTypeTok{age =}\NormalTok{ how_old_are_you, }
          \DataTypeTok{viewings =}\NormalTok{ how_many_times_have_you_seen_the_sound_of_music)}
-\end{Highlighting}
-\end{Shaded}
 
-\hypertarget{check-names}{%
-\section{Check names}\label{check-names}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
+\CommentTok{#check names}
 \KeywordTok{names}\NormalTok{(renamed)}
 \end{Highlighting}
 \end{Shaded}
@@ -229,7 +238,26 @@ Read and clean fav things data
 \section{My turn 2 make it long}\label{my-turn-2-make-it-long}}
 
 \hypertarget{make-wide-data-long}{%
-\section{make wide data long}\label{make-wide-data-long}}
+\subsection{make wide data long}\label{make-wide-data-long}}
+
+This chunk takes the renamed data and makes the favourite things ratings
+from wide to long. The pivot\_longer() function wants to know 3 things.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  what are the columns that are to be made long
+\item
+  what is the name of the new column that will contain what are
+  currently variable names
+\item
+  what is the name of the new column that will contain the values.
+\end{enumerate}
+
+In this case we want to make the columns raindrops thru packages long,
+the names column should be called ``things'', and the values column
+should be called ``rating''
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -244,8 +272,12 @@ Read and clean fav things data
 things}\label{my-turn-3--summarise-fav-things}}
 
 \hypertarget{look-at-the-structure-of-the-data}{%
-\section{look at the structure of the
+\subsection{look at the structure of the
 data}\label{look-at-the-structure-of-the-data}}
+
+The head() function shows you just the first 6 rows of the dataframe. It
+is a useful sanity check when you are checking that the data you have
+read into R looks as you expect.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -265,6 +297,10 @@ data}\label{look-at-the-structure-of-the-data}}
 ## 6     2    32        2     4 raindrops      6
 \end{verbatim}
 
+The str() function gives you an idea of the ``structure'' of the
+dataframe. It prints how many observations and variables you have and
+what kind of data (int, num, chr) is in each variable.
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{str}\NormalTok{(long)}
@@ -280,6 +316,9 @@ data}\label{look-at-the-structure-of-the-data}}
 ##  $ things  : chr  "raindrops" "whiskers" "kettles" "mittens" ...
 ##  $ rating  : num  5 3 4 2 4 6 6 4 4 4 ...
 \end{verbatim}
+
+The glimpse() function gives the same info as str() and the formatting
+is a bit nicer. So it is my go-to.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -299,7 +338,13 @@ data}\label{look-at-the-structure-of-the-data}}
 \end{verbatim}
 
 \hypertarget{get-summary-stats}{%
-\section{get summary stats}\label{get-summary-stats}}
+\subsection{get summary stats}\label{get-summary-stats}}
+
+There a few functions in R that are useful to get quick and dirty
+summary data.
+
+The summary() function gives you means for numeric variables, but isn't
+terribly useful for other kinds of data.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -326,6 +371,10 @@ data}\label{look-at-the-structure-of-the-data}}
 ##                     NA's   :2
 \end{verbatim}
 
+The skim() function from the skimr package groups variables by type and
+gives useful summary stats for each kind of variable. It also includes a
+mini histogram for numeric variables.
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{skim}\NormalTok{(long) }
@@ -337,21 +386,30 @@ data}\label{look-at-the-structure-of-the-data}}
 ##  n obs: 495 
 ##  n variables: 6 
 ## 
-## -- Variable type:character ---------------------------
+## -- Variable type:character ---------------------------------------
 ##  variable missing complete   n min max empty n_unique
 ##    things       0      495 495   7   9     0        5
 ## 
-## -- Variable type:integer -----------------------------
+## -- Variable type:integer -----------------------------------------
 ##  variable missing complete   n mean    sd p0 p25 p50 p75 p100     hist
 ##        id       0      495 495   50 28.61  1  25  50  75   99 ▇▇▇▇▇▇▇▇
 ## 
-## -- Variable type:numeric -----------------------------
+## -- Variable type:numeric -----------------------------------------
 ##  variable missing complete   n  mean    sd p0 p25 p50 p75 p100     hist
 ##       age       5      490 495 37.98 12.64  5  34  40  44   67 ▁▁▂▂▇▃▁▁
 ##    rating       2      493 495  4.9   1.83  1   4   5   7    7 ▂▂▃▃▁▇▆▇
 ##     score       0      495 495  2.99  1.29  0   2   3   4    5 ▁▃▁▅▇▁▃▃
 ##  viewings       0      495 495  9.58 18.06  0   2   4  10  150 ▇▁▁▁▁▁▁▁
 \end{verbatim}
+
+If you want summary stats that you can work with (i.e.~plot), you need
+to create a dataframe. This chuck takes the long dataframe, pipes it
+into a group\_by() function, which allows you to group the subsqeunt
+stats by a variable of interest (in this case ``things''), then pipes
+that into a summarise function to calculate the mean, standard
+deviation, n, and standard error. The output of that is saved to a
+dataframe called ratings\_summary. This summary dataframe can then be
+used as a input to a ggplot.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -368,7 +426,16 @@ data}\label{look-at-the-structure-of-the-data}}
 \section{My turn 4: plot fav things}\label{my-turn-4-plot-fav-things}}
 
 \hypertarget{plot-raw-points}{%
-\section{plot raw points}\label{plot-raw-points}}
+\subsection{plot raw points}\label{plot-raw-points}}
+
+One of my favourite things abotu ggplot is being able to plot scores
+from individual participants (or even individual trials) really easily.
+It is a great way to get a feel for the variability in your data and to
+detect mistakes.
+
+Here we take the long dataframe and pipe it into ggplot, setting age to
+appear on the x axis and viewings to appear on the y axis. Then we add a
+geom layer with points.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -382,10 +449,15 @@ data}\label{look-at-the-structure-of-the-data}}
 ## Warning: Removed 5 rows containing missing values (geom_point).
 \end{verbatim}
 
-\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-9-1.pdf}
+\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-12-1.pdf}
 
 \hypertarget{plot-summary---simple-plot}{%
-\section{plot summary - simple plot}\label{plot-summary---simple-plot}}
+\subsection{plot summary - simple
+plot}\label{plot-summary---simple-plot}}
+
+Here we take the summary dataframe we created above, pipe it into
+ggplot, put things on the x axis and mean on the y axis and add a geom
+layer with columns.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -395,11 +467,14 @@ data}\label{look-at-the-structure-of-the-data}}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-10-1.pdf}
+\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-13-1.pdf}
 
 \hypertarget{plot-summary---bells-and-whistles-plot}{%
-\section{plot summary - bells and whistles
+\subsection{plot summary - bells and whistles
 plot}\label{plot-summary---bells-and-whistles-plot}}
+
+This chunk takes code from above and fancies it up a bit! Adding error
+bars, colour, fixing the axis labels etc.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -420,7 +495,7 @@ plot}\label{plot-summary---bells-and-whistles-plot}}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-11-1.pdf}
+\includegraphics{fav_demo_files/figure-latex/unnamed-chunk-14-1.pdf}
 
 
 \end{document}

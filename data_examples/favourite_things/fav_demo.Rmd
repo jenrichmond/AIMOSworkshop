@@ -3,19 +3,17 @@ title: "fav things demo"
 author: "Jen Richmond"
 date: "05/11/2019"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# My turn 1
+# My turn 1- Read and clean fav things data
 
-Read and clean fav things data
-
-# load packages
+## load packages
 
 ```{r message=FALSE, warning=FALSE}
 library(janitor)
@@ -25,24 +23,33 @@ library(skimr)
 ```
 
 
-# read data
+## read data
+
+The fav_things dataset comes from a google form survey I sent around prior to the workshop. The survey included favourite things ratings and 5 trivia questions about The Sound of Music. You can see a [copy of survey here](https://forms.gle/XAhDG1JfAoAnd9G37). For code to get data from googledrive into R, see the script "get fav from googledrive.R"
+
 
 ```{r}
-fav_things <- read_csv(here("favourite_things", "fav_subset.csv"))
+fav_things <- read_csv(here("data_examples", "favourite_things", "fav_subset.csv"))
 ```
 
 
-# clean names
+## clean names
+
+This chunk cleans the variable names, making them all lower case with underscores in the gaps, creates a new variable called id that creates ids by row, and drops the timestamp variable using select(-variablename). 
+
 ```{r}
 clean <- fav_things %>%
   clean_names() %>%
   rowid_to_column(var = "id") %>%
   select(- timestamp)
 
+#check the names of the variables
 names(clean)
 ```
 
-# rename
+## rename
+
+This chunk uses rename() from dplyr to rename each of the variables. 
 ```{r}
 renamed <- clean %>%
   rename(raindrops = raindrops_on_roses, 
@@ -52,15 +59,23 @@ renamed <- clean %>%
          packages = brown_paper_packages_tied_up_with_string, 
          age = how_old_are_you, 
          viewings = how_many_times_have_you_seen_the_sound_of_music)
-```
 
-# Check names
-```{r}
+#check names
 names(renamed)
 ```
 
-# My turn 2 make it long
-# make wide data long
+
+# My turn 2-  make it long
+
+## make wide data long
+
+This chunk takes the renamed data and makes the favourite things ratings from wide to long. The pivot_longer() function wants to know 3 things. 
+
+1. what are the columns that are to be made long
+2. what is the name of the new column that will contain what are currently variable names
+3. what is the name of the new column that will contain the values. 
+
+In this case we want to make the columns raindrops thru packages long, the names column should be called "things", and the values column should be called "rating"
 
 ```{r}
 long <- renamed %>%
@@ -70,26 +85,44 @@ long <- renamed %>%
 
 # My turn 3- summarise fav things
 
-# look at the structure of the data
+## look at the structure of the data
 
+The head() function shows you just the first 6 rows of the dataframe. It is a useful sanity check when you are checking that the data you have read into R looks as you expect. 
 ```{r}
 head(long)
+```
 
+The str() function gives you an idea of the "structure" of the dataframe. It prints how many observations and variables you have and what kind of data (int, num, chr) is in each variable. 
+```{r}
 str(long)
 
+```
+
+The glimpse() function gives the same info as str() and the formatting is a bit nicer. So it is my go-to. 
+```{r}
 glimpse(long)
 ```
 
+## get summary stats
 
+There a few functions in R that are useful to get quick and dirty summary data. 
 
-# get summary stats
+The summary() function gives you means for numeric variables, but isn't terribly useful for other kinds of data. 
 
 ```{r}
 summary(long)
+```
 
+The skim() function from the skimr package groups variables by type and gives useful summary stats for each kind of variable. It also includes a mini histogram for numeric variables. 
+```{r}
 skim(long) 
 
+```
 
+If you want summary stats that you can work with (i.e. plot), you need to create a dataframe. This chuck takes the long dataframe, pipes it into a group_by() function, which allows you to group the subsqeunt stats by a variable of interest (in this case "things"), then pipes that into a summarise function to calculate the mean, standard deviation, n, and standard error. The output of that is saved to a dataframe called ratings_summary. This summary dataframe can then be used as a input to a ggplot. 
+
+Note: if the variables that you are trying to summarise have missing values (i.e. NAs) include na.rm = TRUE). na.rm tells R to remove the NAs when it is doing the calculations. 
+```{r}
 ratings_summary <- long %>%
   group_by(things) %>%
   summarise(mean = mean(rating, na.rm = TRUE), 
@@ -99,9 +132,13 @@ ratings_summary <- long %>%
 
 ```
 
-# My turn 4: plot fav things
+# My turn 4-  plot fav things
 
-# plot raw points
+## plot raw points
+
+One of my favourite things abotu ggplot is being able to plot scores from individual participants (or even individual trials) really easily. It is a great way to get a feel for the variability in your data and to detect mistakes. 
+
+Here we take the long dataframe and pipe it into ggplot, setting age to appear on the x axis and viewings to appear on the y axis. Then we add a geom layer with points. 
 
 ```{r}
 long %>%
@@ -110,7 +147,9 @@ long %>%
 ```
 
 
-# plot summary - simple plot
+## plot summary - simple plot
+
+Here we take the summary dataframe we created above, pipe it into ggplot, put things on the x axis and mean on the y axis and add a geom layer with columns. 
 
 ```{r}
 ratings_summary %>%
@@ -119,7 +158,9 @@ ratings_summary %>%
 ```
 
 
-# plot summary - bells and whistles plot
+## plot summary - bells and whistles plot
+
+This chunk takes code from above and fancies it up a bit! Adding error bars, colour, fixing the axis labels etc. 
 
 ```{r}
 long$score <- as.factor(long$score) # make score a factor so the colours work

@@ -1,7 +1,7 @@
 ---
 title: "babynames"
 author: "Jen Richmond"
-date: "28/10/2019"
+date: "11/11/2019"
 output: html_document
 ---
 
@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # load libraries
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(here)
 ```
@@ -19,14 +19,15 @@ library(here)
 
 
 ```{r}
-library(tidyverse)
-library(here)
 
-SAbabies <- read_csv(here("ozbaby", "data", "SAbabynames.csv"))
 
+SAbabies <- read_csv(here("data_examples", "ozbaby", "data", "SAbabynames.csv"))
+
+```
 
 ## How popular is your name?
 
+```{r}
 SAbabies %>%
   filter(name =="Jenny") %>%
   ggplot(aes(x = year, y = count))+
@@ -36,6 +37,7 @@ SAbabies %>%
   labs(title= "Number of babies born in SA called Jenny", y = "Number of babies", x = "Year")
 
 ```
+
 ## How popular is your name relative to your neighbours?
 
 ```{r eval = TRUE}
@@ -50,7 +52,8 @@ SAbabies %>%
   labs(title= "Number of babies born in SA called Jenny, Charles, Charlotte", y = "Number of babies", x = "Year")
 
 ```
-### Has your name become more or less popular since your were born?
+
+## Has your name become more or less popular since your were born?
 
 ```{r eval = TRUE}
 
